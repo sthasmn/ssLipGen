@@ -61,8 +61,7 @@ Create a Python script (e.g., run.py) and use the sslip.Aligner class. You only 
 # run.py
 import os
 from sslip.aligner import Aligner
-```
-```
+
 # 1. Set your input data directory.
 #    It should contain your raw video/text files (e.g., in s1, s2... subfolders)
 input_data_dir = r"path/to/your/raw_videos"
