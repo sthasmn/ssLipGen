@@ -19,7 +19,7 @@ Given a directory of videos and their corresponding transcripts, `ssLipGen` hand
 ### 1. Clone the repository:
 
 ```bash
-git clone [https://github.com/your-username/ssLipGen.git](https://github.com/your-username/ssLipGen.git)
+git clone https://github.com/sthasmn/ssLipGen.git
 cd ssLipGen
 ```
 ### 2. Install system dependencies:
