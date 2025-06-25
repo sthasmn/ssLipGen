@@ -43,6 +43,7 @@ Those line will download model and dict to "Documents\MFA\" folder (Not sure abo
 mfa model download acoustic japanese_mfa
 mfa model download dictionary japanese_mfa
 ```
+After diwnload is finished, copy them to project's MFA folder.
 Note: You can change japanese_mfa to other languages supported by MFA (e.g., english_us_arpa). However, this pipeline has only been confirmed for Japanese.
 
 ### 5. Install Python packages:
