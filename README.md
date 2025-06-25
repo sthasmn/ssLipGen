@@ -32,6 +32,7 @@ cd ssLipGen
 conda create -n mfa python=3.10 -y
 conda activate mfa
 conda install -c conda-forge montreal-forced-aligner
+conda install -c conda-forge spacy sudachipy sudachidict-core
 ```
 ### 4. Download MFA Pre-trained Models:
 
@@ -86,6 +87,30 @@ Then, from your terminal (with the mfa conda environment activated), simply run 
 python run.py
 ```
 The first time you run it, the Aligner will automatically download the necessary Dlib model if it's not found in the project folder.
+
+## Input Structure
+The tool will create the following structure in your specified output directory:
+```
+case 1
+<input_data_dir>/
+├── s1/
+│   └── (.mp4, .txt)
+├── s2/
+│   └── (.mp4, .txt)
+├── s3/
+│   └── (.mp4, .txt)
+├── s4/
+│   └── (.mp4, .txt)
+├── s5/
+│   └── (.mp4, .txt)
+└── s6/
+    └── (.mp4, .txt)
+
+case 2
+<input_data_dir>/
+│── (.mp4, .txt)
+
+```
 
 ## Output Structure
 The tool will create the following structure in your specified output directory:
