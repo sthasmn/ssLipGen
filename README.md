@@ -32,6 +32,7 @@ cd ssLipGen
 conda create -n mfa python=3.10 -y
 conda activate mfa
 conda install -c conda-forge montreal-forced-aligner
+conda install -c conda-forge spacy sudachipy sudachidict-core
 ```
 ### 4. Download MFA Pre-trained Models:
 
