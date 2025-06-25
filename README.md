@@ -19,41 +19,47 @@ Given a directory of videos and their corresponding transcripts, `ssLipGen` hand
 ### 1. Clone the repository:
 
 ```bash
-git clone [https://github.com/your-username/ssLipGen.git](https://github.com/your-username/ssLipGen.git)
+git clone https://github.com/sthasmn/ssLipGen.git
 cd ssLipGen
-2. Install system dependencies:
+```
+### 2. Install system dependencies:
 
-FFmpeg: This must be installed and accessible in your system's PATH. You can install it via your system's package manager (e.g., sudo apt-get install ffmpeg on Ubuntu, brew install ffmpeg on macOS).
-Conda: The Montreal Forced Aligner runs best in a Conda environment. Please install Miniconda or Anaconda.
-3. Set up the Conda environment and install MFA:
+-  **FFmpeg:** This must be installed and accessible in your system's PATH. You can install it via your system's package manager (e.g., sudo apt-get install ffmpeg on Ubuntu, brew install ffmpeg on macOS).
+-  **Conda:** The Montreal Forced Aligner runs best in a Conda environment. Please install Miniconda or Anaconda.
+### 3. Set up the Conda environment and install MFA:
 
-Bash
+```Bash
 conda create -n mfa python=3.10 -y
 conda activate mfa
 conda install -c conda-forge montreal-forced-aligner
-4. Download MFA Pre-trained Models:
+```
+### 4. Download MFA Pre-trained Models:
 
 You need to download a pre-trained acoustic model and a pronunciation dictionary for your target language using MFA's command line.
 
 For Japanese, run the following commands:
-
-Bash
+Those line will download model and dict to "Documents\MFA\" folder (Not sure about it. Confirm yourself).
+```Bash
 mfa model download acoustic japanese_mfa
 mfa model download dictionary japanese_mfa
+```
+After diwnload is finished, copy them to project's MFA folder.
 Note: You can change japanese_mfa to other languages supported by MFA (e.g., english_us_arpa). However, this pipeline has only been confirmed for Japanese.
 
-5. Install Python packages:
+### 5. Install Python packages:
 
 Install ssLipGen and its Python dependencies directly from the repository. Make sure your mfa conda environment is active.
 
-Bash
+```Bash
 pip install .
+```
 This will also install requests, opencv-python, dlib, numpy, textgrid, and tqdm.
 
-Usage
+
+## Usage
 Create a Python script (e.g., run.py) and use the sslip.Aligner class. You only need to provide the input and output directories.
 
-Python
+```Python
 # run.py
 import os
 from sslip.aligner import Aligner
@@ -73,15 +79,17 @@ if __name__ == '__main__':
         output_dir=output_data_dir,
     )
     pipeline.run()
+```
 Then, from your terminal (with the mfa conda environment activated), simply run your script:
 
-Bash
+```Bash
 python run.py
+```
 The first time you run it, the Aligner will automatically download the necessary Dlib model if it's not found in the project folder.
 
-Output Structure
+## Output Structure
 The tool will create the following structure in your specified output directory:
-
+```
 <output_data_dir>/
 ├── MouthVideos/
 │   └── (s1, s2, etc.)
@@ -95,5 +103,7 @@ The tool will create the following structure in your specified output directory:
 │   └── (s1, s2, etc.)
 └── Phone_Word_align/
     └── (s1, s2, etc.)
-License
+```
+
+## License
 This project is licensed under the MIT License. See the LICENSE file for details.
