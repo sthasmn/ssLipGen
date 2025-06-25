@@ -124,22 +124,26 @@ class Aligner:
         self.input_dir = os.path.abspath(input_dir)
         self.output_dir = os.path.abspath(output_dir)
         
-        # --- Define all output and dependency directories ---
-        self.dependencies_dir = os.path.join(self.output_dir, "_dependencies")
-        self.dlib_dir = os.path.join(self.dependencies_dir, "dlib")
-        self.mfa_dir = os.path.join(self.dependencies_dir, "mfa")
+        # Determine project root based on the location of this file
+        sslip_dir = os.path.dirname(os.path.abspath(__file__))
+        self.project_root = os.path.dirname(sslip_dir)
+
+        # Define dependency directories within the project folder
+        self.dlib_dir = os.path.join(self.project_root, "DLIB_Predictor")
+        self.mfa_dir = os.path.join(self.project_root, "MFA")
         
+        # Define expected paths for dependency files
+        self.dlib_predictor_path = os.path.join(self.dlib_dir, "shape_predictor_68_face_landmarks.dat")
+        self.mfa_model_path = os.path.join(self.mfa_dir, "japanese_mfa.zip")
+        self.mfa_dict_path = os.path.join(self.mfa_dir, "japanese_mfa.dict")
+        
+        # Define all output directories
         self.mouth_videos_dir = os.path.join(self.output_dir, "MouthVideos")
         self.audio_lab_dir = os.path.join(self.output_dir, "audio_lab")
         self.textgrid_dir = os.path.join(self.output_dir, "TextGrid")
         self.word_align_dir = os.path.join(self.output_dir, "Word_align")
         self.phoneme_align_dir = os.path.join(self.output_dir, "Phoneme_align")
         self.phone_word_align_dir = os.path.join(self.output_dir, "Phone_Word_align")
-
-        # --- Define expected paths for dependency files ---
-        self.dlib_predictor_path = os.path.join(self.dlib_dir, "shape_predictor_68_face_landmarks.dat")
-        self.mfa_model_path = os.path.join(self.mfa_dir, "japanese_mfa.zip")
-        self.mfa_dict_path = os.path.join(self.mfa_dir, "japanese_mfa.dict")
         
         self.SAMPLING_RATE = 16000
         self.SILENCE_TOKEN = "sil"
@@ -164,15 +168,13 @@ class Aligner:
 
     def _setup_dependencies(self):
         """Checks for, downloads, and unpacks all required external files."""
-        print("--- Checking and setting up dependencies ---")
+        print("--- Checking and setting up dependencies in project folder ---")
         os.makedirs(self.dlib_dir, exist_ok=True)
         os.makedirs(self.mfa_dir, exist_ok=True)
 
-        # 1. Check for FFMPEG
         if not shutil.which("ffmpeg"):
             raise FileNotFoundError("FATAL ERROR: FFmpeg is not installed or not in your system's PATH.")
         
-        # 2. Setup Dlib predictor
         if not os.path.exists(self.dlib_predictor_path):
             print("Dlib shape predictor not found.")
             dlib_url = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
@@ -183,31 +185,18 @@ class Aligner:
                     shutil.copyfileobj(f_in, f_out)
                 os.remove(bz2_path)
                 print("Dlib predictor is ready.")
-
-        # 3. Setup MFA model and dictionary
-        if not os.path.exists(self.mfa_dict_path):
-            print("MFA model/dictionary not found.")
-            mfa_url = "https://github.com/Montreal-Forced-Aligner/mfa-models/releases/download/acoustic-v2.0.0/japanese_mfa.zip"
-            if self._download_file(mfa_url, self.mfa_model_path):
-                print("Unzipping MFA model...")
-                with zipfile.ZipFile(self.mfa_model_path, 'r') as zip_ref:
-                    zip_ref.extractall(self.mfa_dir)
-                # The .zip file itself is the model path MFA uses. The .dict is now extracted.
-                if not os.path.exists(self.mfa_dict_path):
-                    # Attempt to find the dict file if it has a different name
-                    found_dicts = glob.glob(os.path.join(self.mfa_dir, '*.dict'))
-                    if found_dicts:
-                        # Rename the first found dict to the expected name
-                        os.rename(found_dicts[0], self.mfa_dict_path)
-                        print("MFA dictionary is ready.")
-                    else:
-                        raise FileNotFoundError("Could not find .dict file in the downloaded MFA model zip.")
-                else:
-                    print("MFA model and dictionary are ready.")
+        
+        # User is now expected to download MFA models manually via CLI
+        if not os.path.exists(self.mfa_model_path) or not os.path.exists(self.mfa_dict_path):
+            print("\n--- MFA Model/Dictionary Not Found ---")
+            print(f"Please ensure '{os.path.basename(self.mfa_model_path)}' and '{os.path.basename(self.mfa_dict_path)}' exist in the '{self.mfa_dir}' directory.")
+            print("You can download them using the MFA command line, for example:")
+            print("mfa model download acoustic japanese_mfa")
+            print("mfa model download dictionary japanese_mfa")
+            raise FileNotFoundError("MFA model or dictionary missing.")
 
         print("All dependencies are ready.")
 
-    # ... (the rest of the class methods: _create_dirs, _prepare_audio_for_mfa, etc. remain the same) ...
     def _create_dirs(self):
         print("--- Creating output directory structure ---")
         for path in [self.mouth_videos_dir, self.audio_lab_dir, self.textgrid_dir,
@@ -244,7 +233,13 @@ class Aligner:
         print("\n[PIPELINE STEP 2/5] Running Montreal Forced Aligner...")
         if not any(os.scandir(self.audio_lab_dir)): print("Warning: audio_lab directory is empty. Skipping MFA."); return
 
-        mfa_cmd = ['mfa', 'align', self.audio_lab_dir, self.mfa_dict_path, self.mfa_model_path, self.textgrid_dir, '--clean', '--jobs', '4']
+        # Find the actual dictionary file path, as MFA might place it in a subfolder
+        found_dicts = glob.glob(os.path.join(self.mfa_dir, '**', '*.dict'), recursive=True)
+        if not found_dicts:
+            raise FileNotFoundError(f"Could not find a .dict file inside '{self.mfa_dir}'. Please run 'mfa model download dictionary...'")
+        actual_dict_path = found_dicts[0]
+
+        mfa_cmd = ['mfa', 'align', self.audio_lab_dir, actual_dict_path, self.mfa_model_path, self.textgrid_dir, '--clean', '--jobs', '4']
         print("Executing: " + ' '.join(mfa_cmd))
         try:
             subprocess.run(mfa_cmd, check=True, capture_output=True, text=True, encoding='utf-8')

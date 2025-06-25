@@ -10,11 +10,11 @@ setup(
     name='sslipgen',
     version='0.1.0',
     author='Suman Shrestha',
-    author_email='sthasmn@gmail.com',
+    author_email='sthasmn@gmail.com', 
     description='An automated pipeline for generating lip-reading datasets.',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/sthasmn/ssLipGen', 
+    url='https://github.com/sthasmn/ssLipGen',
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
