@@ -31,6 +31,7 @@ cd ssLipGen
 ```Bash
 conda create -n mfa python=3.10 -y
 conda activate mfa
+conda config --add channels conda-forge
 conda install -c conda-forge montreal-forced-aligner
 conda install -c conda-forge spacy sudachipy sudachidict-core
 ```
