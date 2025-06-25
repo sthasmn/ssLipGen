@@ -38,7 +38,7 @@ conda install -c conda-forge montreal-forced-aligner
 You need to download a pre-trained acoustic model and a pronunciation dictionary for your target language using MFA's command line.
 
 For Japanese, run the following commands:
-
+Those line will download model and dict to "Documents\MFA\" folder (Not sure about it. Confirm yourself).
 ```Bash
 mfa model download acoustic japanese_mfa
 mfa model download dictionary japanese_mfa
@@ -51,8 +51,9 @@ Install ssLipGen and its Python dependencies directly from the repository. Make 
 
 ```Bash
 pip install .
-This will also install requests, opencv-python, dlib, numpy, textgrid, and tqdm.
 ```
+This will also install requests, opencv-python, dlib, numpy, textgrid, and tqdm.
+
 
 ## Usage
 Create a Python script (e.g., run.py) and use the sslip.Aligner class. You only need to provide the input and output directories.
