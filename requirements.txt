@@ -1,0 +1,6 @@
+requests
+opencv-python
+dlib
+numpy
+textgrid
+tqdm
