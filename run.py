@@ -10,10 +10,10 @@ def main():
     
     # 1. SET YOUR INPUT AND OUTPUT DIRECTORIES HERE
     # The input directory should contain your raw video/text files (e.g., in s1, s2... folders)
-    input_data_dir = r"sample/Input" # change here to your original data location
+    input_data_dir = r"/mnt/e/JGRID/JGRID_RAW_DATA" # change here to your original data location
     
     # The output directory is where all processed files and dependencies will be stored.
-    output_data_dir = r"sample/Output" # change here to your desired location
+    output_data_dir = r"/mnt/e/JGRID/dataset" # change here to your desired location
 
     # --- End of Configuration ---
 
